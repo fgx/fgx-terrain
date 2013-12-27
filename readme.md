@@ -2,7 +2,7 @@
 ========================================================================
 
 ## Concept
-3D terrain elevation data for the entire earth at 90 meter intervals - freely and easily accesible event to new and intermediate programmers
+3D terrain elevation data for the entire earth at 90 meter intervals - freely and easily accesible even to new and intermediate programmers
 
 
 ### Copyright and License
