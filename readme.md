@@ -10,6 +10,9 @@ Live Demo: [FGx Terrain Viewer JS]( http://fgx.github.io/fgx-terrain-viewer-js/i
 3D terrain elevation data for the entire earth at 90 meter intervals - freely and easily accesible even to new and intermediate programmers
 
 ## Notes
+This repo contains every folder and file required to display heitmaps fr Slippy Mak levels 0 to 7.
+
+Currently the bitmaps contain no actual height maps - merely a dummy image of the FGx cap.
 
 
 ### Copyright and License
