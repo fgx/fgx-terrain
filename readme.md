@@ -1,8 +1,15 @@
-![FGx Logo]( http://fgx.github.io/fgx-cap-40x30.png) FGx Terrain Read Me
-========================================================================
+![FGx Logo]( http://fgx.github.io/images/fgx-cap-40x30.png) FGx Terrain Read Me
+==============================================================================
+
+Live Demo: [FGx Terrain Viewer JS]( http://fgx.github.io/fgx-terrain-viewer-js/index.html "Happ viewing!" )
+
+- very preliminary
+
 
 ## Concept
 3D terrain elevation data for the entire earth at 90 meter intervals - freely and easily accesible even to new and intermediate programmers
+
+## Notes
 
 
 ### Copyright and License
