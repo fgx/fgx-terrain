@@ -4,11 +4,11 @@
 Live demos (using a JavaScript viewer):
 
 <iframe src=3d-globe.html height=300 >image of globe here
-![images/3d-globe.png]( images/3d-globe.png )
+<img src=images/3d-globe.png><a href=index.html>View in HTML</a>
 </iframe>
 
 <iframe src=3d-flatland.html height=300 >
-![images/3d-flatland.png]( images/3d-flatland.png )
+<img src=images/3d-flatland.png>
 </iframe>
 _3D Earth and flat map of California_
 
