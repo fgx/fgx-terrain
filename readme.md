@@ -4,11 +4,11 @@
 Live demos (using a JavaScript viewer):
 
 <iframe src=3d-globe.html height=300 >
-<a href=3d-globe.html><img src=images/3d-globe.png></a>
+<a href=http://fgx.github.io/fgx-terrain/3d-globe.html><img src=images/3d-globe.png></a>
 </iframe>
 
 <iframe src=3d-flatland.html height=300 >
-<a href=3d-flatland.html><img src=images/3d-flatland.png></a>
+<a href=http://fgx.github.io/fgx-terrain/3d-flatland.html><img src=images/3d-flatland.png></a>
 </iframe>
 _3D Earth and flat map of California_
 
