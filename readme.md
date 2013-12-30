@@ -3,12 +3,12 @@
 
 Live demos (using a JavaScript viewer):
 
-<iframe src=3d-globe.html height=300 >image of globe here
-<img src=images/3d-globe.png><a href=index.html>View in HTML</a>
+<iframe src=3d-globe.html height=300 >
+<a href=3d-globe.html><img src=images/3d-globe.png></a>
 </iframe>
 
 <iframe src=3d-flatland.html height=300 >
-<img src=images/3d-flatland.png>
+<a href=3d-flatland.html><img src=images/3d-flatland.png></a>
 </iframe>
 _3D Earth and flat map of California_
 
