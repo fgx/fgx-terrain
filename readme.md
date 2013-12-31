@@ -12,7 +12,7 @@ Live demos (using a JavaScript viewer):
 </iframe>
 _3D Earth and flat map of California_
 
- Use your point device to pan, rotate and zoom. Once the projetion issues are sorted out, these models will be overlayed with 2D maps.
+ Use your point device to pan, rotate and zoom. Once the projetion issues are sorted out, these models will be overlayed with 2D maps. Elevations are highly exaggerated.
 
 ## Concept
 ### Mission
@@ -44,7 +44,7 @@ Here is the most basic Slippy Map tile (from OSM):
 
 Link: [http://tile.openstreetmap.org/0/0/0.png]( http://tile.openstreetmap.org/0/0/0.png ) 
 
-FGx Terrain supplies the 3D data by mimicking the standard, the URL and supplying a 'height map' for each Slippy Map tile.
+FGx Terrain supplies the 3D data by mimicking the standard, the URL and supplying a 'height map' for each Slippy Map tile from zoom level 0 to zoom level 18.
 
 ![http://fgx.github.io/fgx-terrain/0/0/0.png]( http://fgx.github.io/fgx-terrain/0/0/0.png ) 
 
@@ -58,7 +58,17 @@ The current objective is to supply individual height maps for each Slippy Map ti
 For tiles above level 7 there will be simple procedures that interpolate data from large (perhaps 2048 x 2048 pixels) height maps and produce the desired data at run time.
 A preliminary version of the interpolator function can be viewed in the [FGx Plane Spotter]( https://github.com/fgx/fgx-plane-spotter/ ) app.
 
-Sample of these procedurs in a variety of languages will be made available.
+Sample of these procedurs in a variety of languages such as written in Python, GO, or C will be made available.
+
+The height data embedded in the images can be used for a variety of purposes. The use cases for this data include
+
+* Building 3D Globes
+* Building flat maps that have altitude
+* Ascertaining the altitude of any airport or determining the rise and fall of a bicycle ride
+* Assisting the calculation of the insolation or a building or area
+* Assisting with land use planning
+* Making geological features more apparent or visible
+ 
 
 
 ## Issues & Notes
@@ -71,8 +81,6 @@ Currently the folders contain height maps only up to level 4 - after that there 
 
 
 ### Copyright and License
-copyright &copy; 2013 Jaanga authors ~ All work herein is under the [MIT License](http://jaanga.github.io/libs/jaanga-copyright-and-mit-license.md)
-
 [FGx copyright notice and license]( https://github.com/fgx/fgx.github.io/blob/master/fgx-copyright-notice-and-license.md )
 
 This repository is at an early and volatile stage. Not all licensing requirements may have been fully met let alone identified. It is the intension of the authors to play fair and all such requirements will either be met or the feature in question will turned off.
