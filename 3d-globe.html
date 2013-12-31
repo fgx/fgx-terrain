@@ -47,7 +47,7 @@
 
 		// var mapTexture = THREE.ImageUtils.loadTexture( 'http://b.tile.openstreetmap.org/0/0/0.png' );
 		var material = new THREE.MeshNormalMaterial( { shading: THREE.SmoothShading } );
-		var geometry = new THREE.SphereGeometry( 40, 255, 255 );
+		var geometry = new THREE.SphereGeometry( 40, 255, 255, 0, Math.PI * 2, 0.087, 2.967);
 		var verts = geometry.vertices;
 		var all, j = 0;
 		for (var i = 0, len = pix.length; i < len; i += 4) {

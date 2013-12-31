@@ -12,7 +12,8 @@ Live demos (using a JavaScript viewer):
 </iframe>
 _3D Earth and flat map of California_
 
- Use your point device to pan, rotate and zoom. Once the projetion issues are sorted out, these models will be overlayed with 2D maps. Elevations are highly exaggerated.
+ Use your point device to pan, rotate and zoom. Once the projetion issues are sorted out, these models will be overlayed with 2D maps. 
+ Elevations are highly exaggerated. There is data missing before the international date line. The Gobe appears distorted at the scale because of the Mercator projection.
 
 ## Concept
 ### Mission
@@ -86,6 +87,11 @@ Currently the folders contain height maps only up to level 4 - after that there 
 This repository is at an early and volatile stage. Not all licensing requirements may have been fully met let alone identified. It is the intension of the authors to play fair and all such requirements will either be met or the feature in question will turned off.
 
 ### Change Log
+
+2013-12-31 ~ Theo
+
+* Updated lvels 0 to 4 with Mercator projection heightmaps.
+
 
 2013-12-29 ~ Theo
 

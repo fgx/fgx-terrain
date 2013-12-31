@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html lang=en>
 <head>
-<title>3D Globe</title>
+<title>3D Flatland</title>
 <meta charset=utf-8>
 </head>
 <body>
@@ -32,7 +32,7 @@
 		// scene.add( mesh );
 
 		heightMap = document.createElement('img' )
-		heightMap.src = '4/2/4.png';
+		heightMap.src = '4/2/6.png';
 		heightMap.onload = initCanvas;
 	}
 
@@ -53,7 +53,7 @@
 		var all, j = 0;
 		for (var i = 0, len = pix.length; i < len; i += 4) {
 			all = pix[i] + pix[i + 1] + pix[i + 2];
-			verts[j++].y = -50 + 0.5  * all;
+			verts[j++].y = -30 + 0.2  * all;
 		}
 		var mesh = new THREE.Mesh( geometry, material );
 		
