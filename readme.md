@@ -66,7 +66,7 @@ The height data embedded in the images can be used for a variety of purposes. Th
 * Building 3D Globes
 * Building flat maps that have altitude
 * Ascertaining the altitude of any airport or determining the rise and fall of a bicycle ride
-* Assisting the calculation of the insolation or a building or area
+* Assisting the calculation of the insolation (the amount of sunlight) on a building or area
 * Assisting with land use planning
 * Making geological features more apparent or visible
  
@@ -85,6 +85,13 @@ Currently the folders contain height maps only up to level 4 - after that there 
 [FGx copyright notice and license]( https://github.com/fgx/fgx.github.io/blob/master/fgx-copyright-notice-and-license.md )
 
 This repository is at an early and volatile stage. Not all licensing requirements may have been fully met let alone identified. It is the intension of the authors to play fair and all such requirements will either be met or the feature in question will turned off.
+
+In preparing this data much use has been made of [GDAL]( http://gdal.org ) and [Image Magick]( http://imagemagick.org ). Thank you for the usefil tools.
+
+The current source for the height maps for levels 0 to 4 is [CleanTOPO2]( http://www.shadedrelief.com/cleantopo2/index.html ). 
+The license is: 'You are welcome to use the contents of this site for personal use.'
+Thank you. 
+
 
 ### Change Log
 
