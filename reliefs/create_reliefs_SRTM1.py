@@ -107,6 +107,14 @@ checklist = []
 
 e = 0
 
+class GridPoints:
+	def __init__(self, n=None, s=None, e=None, w=None):
+		self.n = n
+		self.s = s
+		self.e = e
+		self.w = w
+
+"""
 startnorth = 0
 endnorth = 5
 starteast = 0
@@ -115,7 +123,11 @@ startsouth = 0
 endsouth = 5
 startwest = 0
 endwest = 5
-		
+"""
+StartPoints = GridPoints(n=0, e=0, s=0, w=0)
+EndPoints = GridPoints(n=5, e=5, s=5, w=5)
+S = StartPoints
+E = EndPoints
 		
 ########## Reassign projection to imagemagic output file #############
 
@@ -263,7 +275,7 @@ def imageworkjob(shiftedfilenamex,ogrparam,rasterparam):
 	subprocess.call(finishparam1, shell=True)
 	subprocess.call(finishparam2, shell=True)
 			
-	copyprojection(tempdir+"/coastline1_"+shiftedfilenamex+".tif",""+tempdir+"/end2_"+shiftedfilenamex+".tif")
+	copyprojection(opts.tempdir+"/coastline1_"+shiftedfilenamex+".tif",""+opts.tempdir+"/end2_"+shiftedfilenamex+".tif")
 	subprocess.call(geotagparam1, shell=True)
 	subprocess.call(geotagparam2, shell=True)
 			
@@ -274,25 +286,9 @@ def imageworkjob(shiftedfilenamex,ogrparam,rasterparam):
 
 ########## Going East #############
 
-def count_north_e(startpoint,endpoint):
-	global starteast, endeast
-	for n in range(startpoint,endpoint):
-		if n < 10:
-			northstring = "N0" + str(n)
-		else:
-			northstring = "N" + str(n)
+
 		
-		count_east(northstring, starteast, endeast)
-		
-def count_south_e(startpoint,endpoint):
-	global starteast, endeast
-	for n in range(startpoint,endpoint):
-		if n < 10:
-			southstring = "S0" + str(n)
-		else:
-			southstring = "S" + str(n)
-		
-		count_east(southstring, starteast, endeast)
+
 
 def count_east(northstring, starteast, endeast):
 	global testcount, hgtfile, checklist
@@ -308,28 +304,28 @@ def count_east(northstring, starteast, endeast):
 		
 		checklist.append(hgtfile)
 
-def count_north_e(startpoint,endpoint):
-	global starteast, endeast
+def count_north_e(startpoint, endpoint):
+
 	for n in range(startpoint,endpoint):
 		if n < 10:
 			northstring = "N0" + str(n)
 		else:
 			northstring = "N" + str(n)
 		
-		count_east(northstring, starteast, endeast)
-		
-def count_south_e(startpoint,endpoint):
-	global starteast, endeast
+		count_east(northstring, S.e, E.e)
+
+def count_south_e(startpoint, endpoint):
+
 	for n in range(startpoint,endpoint):
 		if n < 10:
 			southstring = "S0" + str(n)
 		else:
 			southstring = "S" + str(n)
 		
-		count_east(southstring, starteast, endeast)
-
+		count_east(southstring, S.e, E.e)
+		
 def countnortheast():
-	global startnorth, endnorth
+
 	global checklist
 	shiftedfilenamex = ""
 	shiftedfilenamex_n = ""
@@ -338,7 +334,7 @@ def countnortheast():
 	#hgtfile = opts.hgtfile # shortcut for now
 	
 	for i in range(18):
-		count_north_e(startnorth,endnorth)
+		count_north_e(S.n, E.n)
 		
 		shpfilename = hgtfile
 		spliteast = int(hgtfile.split("E")[1]) # east goes plus
@@ -408,14 +404,13 @@ def countnortheast():
 		if fileinlist > 0:
 			imageworkjob(shiftedfilenamex,ogrparam,rasterparam)
 		
-		startnorth += 5
-		endnorth += 5
+		S.n += 5
+		E.n += 5
 		
 		# reset checklist
 		checklist = []
 
 def countsoutheast():
-	global startsouth, endsouth
 	global checklist
 	shiftedfilenamex = ""
 	shiftedfilenamex_n1 = ""
@@ -423,7 +418,7 @@ def countsoutheast():
 	shiftedfilenamex_e = ""
 	
 	for i in range(18):
-		count_south_e(startsouth,endsouth)
+		count_south_e(S.s, E.s)
 		
 		shpfilename = hgtfile
 		spliteast = int(hgtfile.split("E")[1]) # east goes plus
@@ -493,6 +488,7 @@ def countsoutheast():
 			#print hgtfilepath
 			
 			if os.path.exists(hgtfilepath):
+				print "EXITS: ", hgtfilepath
 				mergelist.append(hgtfilepath)
 				fileinlist = 1
 		
@@ -503,8 +499,8 @@ def countsoutheast():
 		if fileinlist > 0:
 			imageworkjob(shiftedfilenamex,ogrparam,rasterparam)
 		
-		startsouth += 5
-		endsouth += 5
+		S.s += 5
+		E.s += 5
 		
 		# reset checklist
 		checklist = []
@@ -513,23 +509,23 @@ def countsoutheast():
 for i in range(36):
 	countnortheast()
 
-	starteast += 5
-	endeast += 5
+	S.e += 5
+	E.e += 5
 
-	startnorth = 0
-	endnorth = 5
+	S.n = 0
+	E.n = 5
 	
-starteast = 0
-endeast = 5
+S.e = 0
+E.e = 5
 	
 for i in range(36):
 	countsoutheast()
 
-	starteast += 5
-	endeast += 5
+	S.e += 5
+	E.e += 5
 
-	startsouth = 0
-	endsouth = 5
+	S.s = 0
+	E.s = 5
 
 # Reset
 checklist = []
@@ -552,38 +548,28 @@ def count_west(northstring, startwest, endwest):
 		checklist.append(hgtfile)
 
 def count_north_w(startpoint,endpoint):
-	global startwest, endwest
+
 	for n in range(startpoint,endpoint):
 		if n < 10:
 			northstring = "N0" + str(n)
 		else:
 			northstring = "N" + str(n)
 		
-		count_west(northstring, startwest, endwest)
+		count_west(northstring, S.w, E.w)
 		
-def count_north_w(startpoint,endpoint):
-	global startwest, endwest
-	for n in range(startpoint,endpoint):
-		if n < 10:
-			northstring = "N0" + str(n)
-		else:
-			northstring = "N" + str(n)
-		
-		count_west(northstring, startwest, endwest)
 		
 def count_south_w(startpoint,endpoint):
-	global startwest, endwest
+
 	for n in range(startpoint,endpoint):
 		if n < 10:
 			southstring = "S0" + str(n)
 		else:
 			southstring = "S" + str(n)
 		
-		count_west(southstring, startwest, endwest)
+		count_west(southstring, S.w, E.w)
 
 
 def countnorthwest():
-	global startnorth, endnorth
 	global checklist
 	shiftedfilenamex = ""
 	shiftedfilenamex_n = ""
@@ -591,7 +577,7 @@ def countnorthwest():
 	shiftedfilenamex_e2 = ""
 	
 	for i in range(18):
-		count_north_w(startnorth,endnorth)
+		count_north_w(S.n, E.n)
 		
 		shpfilename = hgtfile
 		splitwest = int(hgtfile.split("W")[1])*-1.0 # west goes minus
@@ -617,7 +603,7 @@ def countnorthwest():
 				shiftedfilenamex_e = "W"+str(int(hgtfile.split("W")[1].strip("W")))
 			shiftedfilenamex_e2 = shiftedfilenamex_e.replace("W0100","W100").replace("W0010","W010")
 			shiftedfilenamex = shiftedfilenamex_n+shiftedfilenamex_e2
-		
+		print shiftedfilenamex
 		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+opts.tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(splitwest)+" "+str(splitnorth-4)+" "+str(splitwest+5)+" "+str(splitnorth+1)+" -overwrite"
 		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+opts.tempdir+"/"+shiftedfilenamex+".shp "+opts.tempdir+"/"+shiftedfilenamex+".tif"
 						
@@ -665,14 +651,14 @@ def countnorthwest():
 		if fileinlist > 0:
 			imageworkjob(shiftedfilenamex,ogrparam,rasterparam)
 		
-		startnorth += 5
-		endnorth += 5
+		S.n += 5
+		E.n += 5
 		
 		# reset checklist
 		checklist = []
 
 def countsouthwest():
-	global startsouth, endsouth
+
 	global checklist
 	shiftedfilenamex = ""
 	shiftedfilenamex_n = ""
@@ -680,7 +666,7 @@ def countsouthwest():
 	shiftedfilenamex_w2 = ""
 	
 	for i in range(18):
-		count_south_w(startsouth,endsouth)
+		count_south_w(S.s, E.s)
 		
 		shpfilename = hgtfile
 		splitwest = int(hgtfile.split("W")[1])*-1.0 # west goes minus
@@ -759,8 +745,8 @@ def countsouthwest():
 		if fileinlist > 0:
 			imageworkjob(shiftedfilenamex,ogrparam,rasterparam)
 		
-		startsouth += 5
-		endsouth += 5
+		S.s += 5
+		E.s += 5
 		
 		# reset checklist
 		checklist = []
@@ -769,11 +755,11 @@ def countsouthwest():
 for i in range(36):
 	countnorthwest()
 
-	startwest += 5
-	endwest += 5
+	S.w += 5
+	E.w += 5
 
-	startnorth = 0
-	endnorth = 5
+	S.n = 0
+	E.n = 5
 	
 startwest = 0
 endwest = 5
@@ -781,11 +767,11 @@ endwest = 5
 for i in range(36):
 	countsouthwest()
 
-	startwest += 5
-	endwest += 5
+	S.w += 5
+	E.w += 5
 
-	startsouth = 0
-	endsouth = 5
+	S.s = 0
+	E.s = 5
 
 # Reset
 checklist = []
