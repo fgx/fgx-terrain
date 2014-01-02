@@ -126,7 +126,7 @@ endwest = 5
 # processors ... but, there is an easier way to do this anyway, using GDAL
 # to take the projection/transform from a file and assign it to another:
 
-def copyprojection(inputfile,outputfile):
+def copyprojection(inputfile, outputfile):
 
 	datasetin = gdal.Open(inputfile)
 	if datasetin is None:
