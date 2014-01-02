@@ -75,7 +75,6 @@ parser.add_option("-r",  nargs=1, action="store", dest="reliefdir", help="relief
 parser.add_option("-m",  nargs=1, action="store", dest="mergedir", help="merge dir" )
 (opts, args) = parser.parse_args()
 
-print opts, args
 if opts.hgtdir == None or opts.tempdir == None or opts.reliefdir == None or opts.mergedir == None:
 	print "FATAL: arguments missing"
 	parser.print_help()
@@ -95,17 +94,12 @@ except:
 	sys.exit(0)
 	
 
+
 ## Converience
 
 # defines the grid, i.e. 5x5
 # this merges 25 hgt files into one
 chunksize = 5
-
-testcount = 0
-hgtfile = ""
-checklist = []
-
-e = 0
 
 class GridPoints:
 	def __init__(self, n=None, s=None, e=None, w=None):
@@ -113,21 +107,23 @@ class GridPoints:
 		self.s = s
 		self.e = e
 		self.w = w
-
-"""
-startnorth = 0
-endnorth = 5
-starteast = 0
-endeast = 5
-startsouth = 0
-endsouth = 5
-startwest = 0
-endwest = 5
-"""
 StartPoints = GridPoints(n=0, e=0, s=0, w=0)
 EndPoints = GridPoints(n=5, e=5, s=5, w=5)
+
+## Shortcuts
 S = StartPoints
 E = EndPoints
+		
+testcount = 0
+hgtfile = ""
+checklist = []
+
+e = 0
+
+
+
+
+
 		
 ########## Reassign projection to imagemagic output file #############
 
@@ -139,7 +135,7 @@ E = EndPoints
 # to take the projection/transform from a file and assign it to another:
 
 def copyprojection(inputfile, outputfile):
-
+	print "copyprojection", inputfile, outputfile
 	datasetin = gdal.Open(inputfile)
 	if datasetin is None:
 		print 'Unable to open', inputfile, 'for reading'
@@ -504,8 +500,10 @@ def countsoutheast():
 		
 		# reset checklist
 		checklist = []
-		
-		
+
+
+###########################################################################	
+## START
 for i in range(36):
 	countnortheast()
 
@@ -582,7 +580,7 @@ def countnorthwest():
 		shpfilename = hgtfile
 		splitwest = int(hgtfile.split("W")[1])*-1.0 # west goes minus
 		splitnorth = int(hgtfile.split("W")[0].strip("N")) # north goes plus
-		
+		print hgtfile, splitwest, splitnorth
 		if int(hgtfile.split("W")[0].strip("N")) < 10:
 			shiftedfilenamex_n = "N0"+str(int(hgtfile.split("W")[0].strip("N"))-4)
 			if int(hgtfile.split("W")[1].strip("W"))-5 < 10:
