@@ -1,4 +1,5 @@
-#/usr/bin/env python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #                                                                                    
 #                                                  _                                 
 #                                  __             /:\    O   _                       
@@ -59,23 +60,42 @@ try:
 except ImportError:
     import gdal
 	
-if sys.argv[1] == "--help" or sys.argv[1] == "-h" or sys.argv[1] == "" or sys.argv[1] == "help" or sys.argv[1] == "":
-   print "Usage: python create_reliefs.py <hgtinputdir> <tempdir> <reliefdir> <mergedir>"
-   sys.exit(0)
+from optparse import OptionParser
+
+##======================================================================
+## Parse Options
+usage = "usage: create_reliefs.py  -i <hgtinputdir> -t <tempdir> -t <reliefdir> -m <mergedir> "
+
+parser = OptionParser(usage=usage)
+
+parser.add_option("-i",  nargs=1, action="store", dest="hgtdir", help="hgt input dir" )
+parser.add_option("-t",  nargs=1, action="store", dest="tempdir", help="temp dir" )
+
+parser.add_option("-r",  nargs=1, action="store", dest="reliefdir", help="relief dir" )
+parser.add_option("-m",  nargs=1, action="store", dest="mergedir", help="merge dir" )
+(opts, args) = parser.parse_args()
+
+print opts, args
+if opts.hgtdir == None or opts.tempdir == None or opts.reliefdir == None or opts.mergedir == None:
+	print "FATAL: arguments missing"
+	parser.print_help()
+	sys.exit(1)
 
 try:
-	hgtdir = sys.argv[1]
-	tempdir = sys.argv[2]
-	reliefdir = sys.argv[3]
-	mergedir = sys.argv[4]
-	if not os.path.exists(tempdir):
-		os.mkdir(tempdir)
-	if not os.path.exists(reliefdir):
-		os.mkdir(reliefdir)
-	if not os.path.exists(mergedir):
-		os.mkdir(mergedir)
+	if not os.path.exists(opts.tempdir):
+		os.mkdir(opts.tempdir)
+		
+	if not os.path.exists(opts.reliefdir):
+		os.mkdir(opts.reliefdir)
+		
+	if not os.path.exists(opts.mergedir):
+		os.mkdir(opts.mergedir)
 except:
 	print "Error: Could not create directories."
+	sys.exit(0)
+	
+
+## Converience
 
 # defines the grid, i.e. 5x5
 # this merges 25 hgt files into one
@@ -155,6 +175,8 @@ def imageworkparam(shiftedfilenamex,mergelist):
 	global cleanparam
 	global mergeparam2
 
+	tempdir = opts.tempdir ## Shortcut for now
+	
 	# Merge all .hgt files to the new 5x5 chunks
 	mergeparam = "gdal_merge.py -o "+tempdir+"/merged_"+shiftedfilenamex+".tif -ot UInt16 "+tempdir+"/"+shiftedfilenamex+".tif "
 	
@@ -197,8 +219,8 @@ def imageworkparam(shiftedfilenamex,mergelist):
 	# thanks to fake colourrelief used as colourmask for sea we have one ...
 	# Move merged DEM files to merged directory
 	# geotagparam name should be changed to something meaningful
-	geotagparam1 = "mv "+tempdir+"/end2_"+shiftedfilenamex+".tif "+reliefdir+"/"+shiftedfilenamex+".tif"
-	geotagparam2 = "mv "+tempdir+"/merged_"+shiftedfilenamex+".tif "+mergedir+"/"+shiftedfilenamex+".tif"
+	geotagparam1 = "mv "+tempdir+"/end2_"+shiftedfilenamex+".tif "+opts.reliefdir+"/"+shiftedfilenamex+".tif"
+	geotagparam2 = "mv "+tempdir+"/merged_"+shiftedfilenamex+".tif "+opts.mergedir+"/"+shiftedfilenamex+".tif"
 	
 	# Clean temp dir
 	cleanparam = "rm -R "+tempdir+"/*"
@@ -313,6 +335,8 @@ def countnortheast():
 	shiftedfilenamex_n = ""
 	shiftedfilenamex_e = ""
 	
+	#hgtfile = opts.hgtfile # shortcut for now
+	
 	for i in range(18):
 		count_north_e(startnorth,endnorth)
 		
@@ -339,8 +363,8 @@ def countnortheast():
 				shiftedfilenamex_e = "E"+str(int(hgtfile.split("E")[1].strip("E"))-5)
 			shiftedfilenamex = shiftedfilenamex_n+shiftedfilenamex_e
 		
-		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(spliteast-5)+" "+str(splitnorth-4)+" "+str(spliteast)+" "+str(splitnorth+1)+" -overwrite"
-		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+tempdir+"/"+shiftedfilenamex+".shp "+tempdir+"/"+shiftedfilenamex+".tif"
+		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+opts.tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(spliteast-5)+" "+str(splitnorth-4)+" "+str(spliteast)+" "+str(splitnorth+1)+" -overwrite"
+		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+opts.tempdir+"/"+shiftedfilenamex+".shp "+opts.tempdir+"/"+shiftedfilenamex+".tif"
 						
 		fileinlist = 0
 		
@@ -373,7 +397,7 @@ def countnortheast():
 				shiftedfilename = shiftedfilename_n+shiftedfilename_e
 				
 			
-			hgtfilepath = ""+hgtdir+"/"+shiftedfilename+".hgt"
+			hgtfilepath = ""+opts.hgtdir+"/"+shiftedfilename+".hgt"
 			if os.path.exists(hgtfilepath):
 				mergelist.append(hgtfilepath)
 				fileinlist = 1
@@ -426,8 +450,8 @@ def countsoutheast():
 				shiftedfilenamex_e = "E"+str(int(hgtfile.split("E")[1].strip("E"))-5)
 			shiftedfilenamex = shiftedfilenamex_n2+shiftedfilenamex_e
 		
-		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(spliteast-5)+" "+str(splitsouth-1)+" "+str(spliteast)+" "+str(splitsouth+4)+" -overwrite"
-		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+tempdir+"/"+shiftedfilenamex+".shp "+tempdir+"/"+shiftedfilenamex+".tif"
+		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+opts.tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(spliteast-5)+" "+str(splitsouth-1)+" "+str(spliteast)+" "+str(splitsouth+4)+" -overwrite"
+		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+opts.tempdir+"/"+shiftedfilenamex+".shp "+opts.tempdir+"/"+shiftedfilenamex+".tif"
 		
 		
 		fileinlist = 0
@@ -464,7 +488,7 @@ def countsoutheast():
 				shiftedfilename = shiftedfilename_n2+shiftedfilename_e
 				
 			
-			hgtfilepath = ""+hgtdir+"/"+shiftedfilename+".hgt"
+			hgtfilepath = ""+opts.hgtdir+"/"+shiftedfilename+".hgt"
 			
 			#print hgtfilepath
 			
@@ -594,8 +618,8 @@ def countnorthwest():
 			shiftedfilenamex_e2 = shiftedfilenamex_e.replace("W0100","W100").replace("W0010","W010")
 			shiftedfilenamex = shiftedfilenamex_n+shiftedfilenamex_e2
 		
-		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(splitwest)+" "+str(splitnorth-4)+" "+str(splitwest+5)+" "+str(splitnorth+1)+" -overwrite"
-		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+tempdir+"/"+shiftedfilenamex+".shp "+tempdir+"/"+shiftedfilenamex+".tif"
+		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+opts.tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(splitwest)+" "+str(splitnorth-4)+" "+str(splitwest+5)+" "+str(splitnorth+1)+" -overwrite"
+		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+opts.tempdir+"/"+shiftedfilenamex+".shp "+opts.tempdir+"/"+shiftedfilenamex+".tif"
 						
 		fileinlist = 0
 		
@@ -630,7 +654,7 @@ def countnorthwest():
 				shiftedfilename = shiftedfilename_n+shiftedfilename_e2
 				
 			
-			hgtfilepath = ""+hgtdir+"/"+shiftedfilename+".hgt"
+			hgtfilepath = "%s/%s.hgt" % (opts.hgtdir, shiftedfilename)
 			if os.path.exists(hgtfilepath):
 				mergelist.append(hgtfilepath)
 				fileinlist = 1
@@ -686,8 +710,8 @@ def countsouthwest():
 			shiftedfilenamex_w2 = shiftedfilenamex_w.replace("W0100","W100").replace("W0010","W010")
 			shiftedfilenamex = shiftedfilenamex_n2+shiftedfilenamex_w2
 		
-		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(splitwest)+" "+str(splitsouth-1)+" "+str(splitwest+5)+" "+str(splitsouth+4)+" -overwrite"
-		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+tempdir+"/"+shiftedfilenamex+".shp "+tempdir+"/"+shiftedfilenamex+".tif"
+		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+opts.tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(splitwest)+" "+str(splitsouth-1)+" "+str(splitwest+5)+" "+str(splitsouth+4)+" -overwrite"
+		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+opts.tempdir+"/"+shiftedfilenamex+".shp "+opts.tempdir+"/"+shiftedfilenamex+".tif"
 		
 		
 		fileinlist = 0
@@ -724,7 +748,7 @@ def countsouthwest():
 				shiftedfilename_w2 = shiftedfilename_w.replace("W0100","W100").replace("W0010","W010")
 				shiftedfilename = shiftedfilename_n2+shiftedfilename_w2
 			
-			hgtfilepath = ""+hgtdir+"/"+shiftedfilename+".hgt"
+			hgtfilepath = ""+opts.hgtdir+"/"+shiftedfilename+".hgt"
 			if os.path.exists(hgtfilepath):
 				mergelist.append(hgtfilepath)
 				fileinlist = 1
