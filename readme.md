@@ -92,8 +92,46 @@ The current source for the height maps for levels 0 to 4 is [CleanTOPO2]( http:/
 The license is: 'You are welcome to use the contents of this site for personal use.'
 Thank you. 
 
+## GDAL
 
-### Change Log
+There are a number of ways to install GDAL
+
+Links on the GDAL site:
+
+* http://trac.osgeo.org/gdal/wiki/DownloadingGdalBinaries
+
+Two we have looked at:
+
+* <http://trac.osgeo.org/gdal/wiki/DownloadingGdalBinaries>
+* <http://fwtools.maptools.org/>
+
+
+Our current favorite way is via oSGeo4W:
+
+* [OSGeo4W]( http://trac.osgeo.org/osgeo4w )
+
+
+
+This app allows you to install GDAL/OGR, QGIS, GRASS, Python and much more - perhaps too much. 
+If you want a minimal installation, you can use the 'Express Install' and just selecy GDAL. 
+And then run 'Advanced Install' and add the Python utilities - which includes gdl2tiles.py.
+
+We could have learned a lot faster if we had found this page earlier:
+
+<http://alastaira.wordpress.com/2011/07/11/maptiler-gdal2tiles-and-raster-resampling/>
+
+Here is the command line we are using:
+
+    gdal2tiles -e -n -p mercator -r bilinear -w none -z 0-7 input.tif output-folder/
+	
+Since we are using OSM format, we had to edit gdal2tile. We did so according to this link:
+
+<http://gis.stackexchange.com/questions/63024/gdal2tiles-maptiles-from-bsb-kap-are-switched>
+
+	
+	
+	
+## Change Log
 
 2013-12-31 ~ Theo
 
