@@ -172,7 +172,7 @@ def copyprojection(inputfile, outputfile):
 # clean: remove temporary files in temp dir
 
 def imageworkparam(shiftedfilenamex,mergelist):
-
+	print ">>imageworkparam"
 	global hillshadeparam1,hillshadeparam2,hillshadeparam3
 	global hillshadeparam1_mpc,hillshadeparam2_mpc
 	global coastlineparam1,coastlineparam2, coastlineparam3, coastlineparam4
@@ -247,13 +247,22 @@ def imageworkparam(shiftedfilenamex,mergelist):
 # and gdal work, nut guess the imagemagick work remains subprocesses.
 	
 def imageworkjob(shiftedfilenamex,ogrparam,rasterparam):
-
+	print ">> imageworkjob"
 	global fileinlist
 
+	print "ogrparam", ogrparam
 	subprocess.call(ogrparam, shell=True)
+	
+	print "rasterparam", rasterparam
 	subprocess.call(rasterparam, shell=True)
+	
+	print "mergeparam2", mergeparam2
 	subprocess.call(mergeparam2, shell=True)
+	
+	print "hillshadeparam1", hillshadeparam1
 	subprocess.call(hillshadeparam1, shell=True)
+	
+	print "hillshadeparam1_mpc", hillshadeparam1_mpc
 	subprocess.call(hillshadeparam1_mpc, shell=True)
 	subprocess.call(hillshadeparam2, shell=True)
 	subprocess.call(hillshadeparam2_mpc, shell=True)
@@ -270,7 +279,7 @@ def imageworkjob(shiftedfilenamex,ogrparam,rasterparam):
 	subprocess.call(imageshackparam5, shell=True)
 	subprocess.call(finishparam1, shell=True)
 	subprocess.call(finishparam2, shell=True)
-			
+	print ere		
 	copyprojection(opts.tempdir+"/coastline1_"+shiftedfilenamex+".tif",""+opts.tempdir+"/end2_"+shiftedfilenamex+".tif")
 	subprocess.call(geotagparam1, shell=True)
 	subprocess.call(geotagparam2, shell=True)
@@ -287,29 +296,41 @@ def imageworkjob(shiftedfilenamex,ogrparam,rasterparam):
 
 
 def count_east(northstring, starteast, endeast):
+	print "count_east", northstring, starteast, endeast
+	
 	global testcount, hgtfile, checklist
-	for e in range(starteast, endeast):
-		#e = e + 1
+	for e in range(starteast, endeast):		
+		"""
 		if e < 10:
 			hgtfile = northstring + "E00" + str(e+1)
 		elif e < 100:
 			hgtfile = northstring + "E0" + str(e+1)
 		elif e < 1000:
 			hgtfile = northstring + "E" + str(e+1)
-		testcount += 1
-		
 		checklist.append(hgtfile)
-
+		"""
+		hgtfile = northstring + "E%03d" % ( e + 1 )
+		#print hfile, hgtfile, hfile == hgtfile
+		testcount += 1
+		checklist.append(hgtfile)
+		
+		
+	print checklist, testcount
+	
+		
 def count_north_e(startpoint, endpoint):
-
-	for n in range(startpoint,endpoint):
-		if n < 10:
+	print "count_north_e", startpoint, endpoint
+	for n in range(startpoint, endpoint):
+		"""if n < 10:
 			northstring = "N0" + str(n)
 		else:
 			northstring = "N" + str(n)
+		nstring = "N%02d" % n
 		
-		count_east(northstring, S.e, E.e)
-
+		print "count_north_e", northstring, nstring, northstring == nstring, S.e, E.e
+		"""
+		count_east("N%02d" % n, S.e, E.e)
+		
 def count_south_e(startpoint, endpoint):
 
 	for n in range(startpoint,endpoint):
@@ -321,7 +342,7 @@ def count_south_e(startpoint, endpoint):
 		count_east(southstring, S.e, E.e)
 		
 def countnortheast():
-
+	print "countnortheast"
 	global checklist
 	shiftedfilenamex = ""
 	shiftedfilenamex_n = ""
@@ -335,7 +356,7 @@ def countnortheast():
 		shpfilename = hgtfile
 		spliteast = int(hgtfile.split("E")[1]) # east goes plus
 		splitnorth = int(hgtfile.split("E")[0].strip("N")) # north goes plus
-		
+		print hgtfile, spliteast, splitnorth
 		if int(hgtfile.split("E")[0].strip("N")) < 10:
 			shiftedfilenamex_n = "N0"+str(int(hgtfile.split("E")[0].strip("N"))-4)
 			if int(hgtfile.split("E")[1].strip("E"))-5 < 10:
@@ -354,7 +375,8 @@ def countnortheast():
 			elif int(hgtfile.split("E")[1].strip("E"))-5 < 1000:
 				shiftedfilenamex_e = "E"+str(int(hgtfile.split("E")[1].strip("E"))-5)
 			shiftedfilenamex = shiftedfilenamex_n+shiftedfilenamex_e
-		
+		print "shiftedfilenamex", shiftedfilenamex
+		#print die
 		ogrparam = "ogr2ogr -f 'ESRI Shapefile' "+opts.tempdir+"/"+shiftedfilenamex+".shp earthshape/earth.shp -clipsrc "+str(spliteast-5)+" "+str(splitnorth-4)+" "+str(spliteast)+" "+str(splitnorth+1)+" -overwrite"
 		rasterparam = "gdal_rasterize -of GTiff -ot UInt16 -a shapeid -ts 18001 18001 -l "+shiftedfilenamex+" "+opts.tempdir+"/"+shiftedfilenamex+".shp "+opts.tempdir+"/"+shiftedfilenamex+".tif"
 						
@@ -388,12 +410,14 @@ def countnortheast():
 					shiftedfilename_e = "E"+str(int(file.split("E")[1].strip("E"))-1)
 				shiftedfilename = shiftedfilename_n+shiftedfilename_e
 				
-			
 			hgtfilepath = ""+opts.hgtdir+"/"+shiftedfilename+".hgt"
 			if os.path.exists(hgtfilepath):
+				print hgtfilepath
+				print ere
 				mergelist.append(hgtfilepath)
 				fileinlist = 1
-		
+		print shiftedfilenamex, mergelist
+		#print stopp
 		imageworkparam(shiftedfilenamex,mergelist)
 		
 		# when a file exist in the mergelist do the job
