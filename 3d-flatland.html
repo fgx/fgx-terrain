@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html lang=en>
 <head>
-<title>3D Flatland</title>
+<title>FGx Terrain ~ 3D Flatland Demo</title>
 <meta charset=utf-8>
 </head>
 <body>
@@ -26,9 +26,9 @@
 		controls = new THREE.TrackballControls( camera, renderer.domElement );
 
 // ocean
-		var material = new THREE.MeshNormalMaterial( { opacity: 0.85, shading: THREE.SmoothShading, transparent: true} );
-		var geometry = new THREE.SphereGeometry( 62, 100, 50 );
-		var mesh = new THREE.Mesh( geometry, material );
+		// var material = new THREE.MeshNormalMaterial( { opacity: 0.85, shading: THREE.SmoothShading, transparent: true} );
+		// var geometry = new THREE.SphereGeometry( 62, 100, 50 );
+		// var mesh = new THREE.Mesh( geometry, material );
 		// scene.add( mesh );
 
 		heightMap = document.createElement('img' )
@@ -53,7 +53,7 @@
 		var all, j = 0;
 		for (var i = 0, len = pix.length; i < len; i += 4) {
 			all = pix[i] + pix[i + 1] + pix[i + 2];
-			verts[j++].y = -30 + 0.2  * all;
+			verts[j++].y = -30 + 0.025  * all;
 		}
 		var mesh = new THREE.Mesh( geometry, material );
 		

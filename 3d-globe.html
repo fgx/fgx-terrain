@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html lang=en>
 <head>
-<title>3D Globe</title>
+<title>FGx Terrain ~ 3D Globe Demo</title>
 <meta charset=utf-8>
 </head>
 <body>
@@ -29,7 +29,7 @@
 		var material = new THREE.MeshNormalMaterial( { opacity: 0.85, shading: THREE.SmoothShading, transparent: true} );
 		var geometry = new THREE.SphereGeometry( 62, 100, 50 );
 		var mesh = new THREE.Mesh( geometry, material );
-		scene.add( mesh );
+		// scene.add( mesh );
 
 		heightMap = document.createElement('img' )
 		heightMap.src = '0/0/0.png';
@@ -47,12 +47,12 @@
 
 		// var mapTexture = THREE.ImageUtils.loadTexture( 'http://b.tile.openstreetmap.org/0/0/0.png' );
 		var material = new THREE.MeshNormalMaterial( { shading: THREE.SmoothShading } );
-		var geometry = new THREE.SphereGeometry( 40, 255, 255, 0, Math.PI * 2, 0.087, 2.967);
+		var geometry = new THREE.SphereGeometry( 50, 255, 255, 0, Math.PI * 2, 0.087, 2.967);
 		var verts = geometry.vertices;
 		var all, j = 0;
 		for (var i = 0, len = pix.length; i < len; i += 4) {
 			all = pix[i] + pix[i + 1] + pix[i + 2];
-			verts[j++].multiplyScalar( 1 + 0.005  * all );
+			verts[j++].multiplyScalar( 1 + 0.0005  * all );
 		}
 		var mesh = new THREE.Mesh( geometry, material );
 		mesh.geometry.computeFaceNormals();
