@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test</title>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <link rel="icon" type="image/png" href="images/icon.png" />
+        <style type="text/css">
+            body{
+            color: grey;
+            font-family: "Lucida Sans Unicode", Lucida Grande, sans-serif;
+            margin: 0px 0px;
+            padding: 0px 0px;
+            }
+
+            #header {
+            width: 800px;
+            margin: 5px auto;
+            }
+
+            .blue {
+            color: cornflowerblue;
+            padding-left: 2em;
+            padding-right: 2em;
+            opacity: 0.5;
+            }
+
+            #viewport {
+            border: 2px solid grey;
+            border-radius: 5px;
+            background-color: cornflowerblue;
+            width: 800px;
+            height: 600px;
+            margin: 0 auto;
+            padding: 0;
+            }
+        </style>
+
+        <!--change src to point to your own local copy of three.js-->
+        <script src="lib/three.min.js">
+        </script>
+
+        <script type="text/javascript">
+
+        //----Variables----//
+            //DOM element to attach the renderer to
+            var viewport;
+
+            //built-in three.js controls will be attached to this
+            var controls;
+
+            //viewport size
+            var viewportWidth = 800;
+            var viewportHeight = 600;
+
+            //camera attributes
+            var view_angle = 45,
+                aspect = viewportWidth / viewportHeight,
+                near = 0.1,//near clip-plane
+                far = 10000;//far clip-plane
+
+            //sphere specifications
+            var radius = 50, segments = 32, rings = 32;
+
+
+        //----Constructors----//
+            var renderer = new THREE.WebGLRenderer({antialias: true});
+            var scene = new THREE.Scene();
+
+            var camera = new THREE.PerspectiveCamera(
+            view_angle,
+            aspect,
+            near,
+            far
+            );
+
+            //constructs an instance of a white light
+            var pointLight = new THREE.PointLight( 0xFFFFFF );
+
+            //sphere material
+            var sphereMaterial = new THREE.MeshLambertMaterial( {
+                color: 0xCC0000
+            });
+
+            //constructs an instance of a sphere
+            var sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(radius, segments, rings),
+                sphereMaterial);
+
+            //a cross-browser method for efficient animation, more info at:
+            // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+            window.requestAnimFrame = (function(){
+              return  window.requestAnimationFrame       || 
+                      window.webkitRequestAnimationFrame || 
+                      window.mozRequestAnimationFrame    || 
+                      window.oRequestAnimationFrame      || 
+                      window.msRequestAnimationFrame     || 
+                      function( callback ){
+                        window.setTimeout(callback, 1000 / 60);
+                      };
+            })();
+
+        //----Initialization----//
+            function initialize()
+            {
+                //Sets up the renderer to the same size as a DOM element
+                //and attaches it to that element
+                renderer.setSize(viewportWidth, viewportHeight);
+                viewport = document.getElementById('viewport');
+                viewport.appendChild(renderer.domElement);
+
+                camera.position.set(0,0,200);
+
+                //attaches fly controls to the camera
+                controls = new THREE.FlyControls( camera );
+                //camera control properties
+                controls.movementSpeed = 1;
+                controls.domElement = viewport;
+                controls.rollSpeed = 0.01;
+                controls.autoForward = false;
+                controls.dragToLook = true;
+
+                sphere.position.set(0,0,0);
+
+                pointLight.position.set(10,50,150);
+
+                //add the objects to the scene
+                scene.add(camera);
+                scene.add(sphere);
+                scene.add(pointLight);
+
+                // call update
+                update();
+            }
+
+
+
+        //----Update----//
+            function update() {
+                //requests the browser to call update at it's own pace
+                requestAnimFrame( update );
+
+                //update controls
+                controls.update( 1 );
+
+                //call draw
+                draw();
+            }
+
+
+
+        //----Draw----//
+            function draw() {
+                renderer.render(scene, camera);
+            }
+            </script>
+    </head>
+    <body onload="initialize();">
+        <div id="header">
+            <h3>Basic Scene with flying camera</h3>
+            <p>
+            Move: w a s d r f<span class="blue">|</span>
+            Look: arrow keys / drag mouse<span class="blue">|</span>
+            Roll: q e
+            </p>
+        </div>
+
+        <div id="viewport"></div>
+
+    </body>
+</html>
