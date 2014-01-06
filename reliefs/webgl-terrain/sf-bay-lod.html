@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>FGx Terrain LOD Example</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background:#000;
+				color:#fff;
+				padding:0;
+				margin:0;
+				overflow:hidden;
+			}
+
+		</style>
+	</head>
+
+	<body>
+
+		<script src="lib/three.min.js"></script>
+		<script src="lib/FlyControls.js"></script>
+		<script src="lib/Detector.js"></script>
+		<script src="lib/libs/stats.min.js"></script>
+		<script src="lib/TerrainLoader.js"></script> 
+
+		<script>
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			var container, stats;
+
+			var camera, scene, renderer;
+
+			var geometry, objects;
+
+			var controls, clock = new THREE.Clock();
+			
+			var geometry = [
+					
+				[ new THREE.PlaneGeometry( 20, 20, 0, 0 ), 500 ],
+				[ new THREE.PlaneGeometry( 20, 20, 1, 1 ), 280 ],
+				[ new THREE.PlaneGeometry( 20, 20, 3, 3 ), 240 ],
+				[ new THREE.PlaneGeometry( 20, 20, 7, 7 ), 200 ],
+				[ new THREE.PlaneGeometry( 20, 20, 15, 15 ), 160 ],
+				[ new THREE.PlaneGeometry( 20, 20, 31, 31 ), 120 ],
+				[ new THREE.PlaneGeometry( 20, 20, 63, 63 ), 80 ],
+				[ new THREE.PlaneGeometry( 20, 20, 127, 127 ), 40 ],
+				[ new THREE.PlaneGeometry( 20, 20, 255, 255 ), 0 ]
+
+			];
+			
+			var terrainLoader256 = new THREE.TerrainLoader();
+				
+				terrainLoader256.load('assets/N35W125_clipped_256x256.bin', function(data) {
+        			for (var i = 0, l = geometry[8][0].vertices.length; i < l; i++) {
+        				geometry[8][0].vertices[i].z = data[i] / 65535;
+        			}
+        		});
+				
+			var terrainLoader128 = new THREE.TerrainLoader();
+				
+				terrainLoader128.load('assets/N35W125_clipped_128x128.bin', function(data) {
+        			for (var i = 0, l = geometry[7][0].vertices.length; i < l; i++) {
+        				geometry[7][0].vertices[i].z = data[i] / 65535;
+        			}
+        		});
+        		
+        	var terrainLoader64 = new THREE.TerrainLoader();
+				
+				terrainLoader64.load('assets/N35W125_clipped_64x64.bin', function(data) {
+        			for (var i = 0, l = geometry[6][0].vertices.length; i < l; i++) {
+        				geometry[6][0].vertices[i].z = data[i] / 65535;
+        			}
+        		});
+        	
+        	var terrainLoader32 = new THREE.TerrainLoader();
+				
+				terrainLoader32.load('assets/N35W125_clipped_32x32.bin', function(data) {
+        			for (var i = 0, l = geometry[5][0].vertices.length; i < l; i++) {
+        				geometry[5][0].vertices[i].z = data[i] / 65535;
+        			}
+        		});
+        		
+        	var terrainLoader16 = new THREE.TerrainLoader();
+				
+				terrainLoader16.load('assets/N35W125_clipped_16x16.bin', function(data) {
+        			for (var i = 0, l = geometry[4][0].vertices.length; i < l; i++) {
+        				geometry[4][0].vertices[i].z = data[i] / 65535;
+        			}
+        		});
+        		
+        	var terrainLoader8 = new THREE.TerrainLoader();
+				
+				terrainLoader8.load('assets/N35W125_clipped_8x8.bin', function(data) {
+        			for (var i = 0, l = geometry[3][0].vertices.length; i < l; i++) {
+        				geometry[3][0].vertices[i].z = data[i] / 65535;
+        			}
+        		});
+        		
+        	var terrainLoader4 = new THREE.TerrainLoader();
+				
+				terrainLoader4.load('assets/N35W125_clipped_4x4.bin', function(data) {
+        			for (var i = 0, l = geometry[2][0].vertices.length; i < l; i++) {
+        				geometry[2][0].vertices[i].z = data[i] / 65535;
+        			}
+        			
+        			init();
+					animate();
+        		});
+        		
+        	var material = [
+        		
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_4x4.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_4x4.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_4x4.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_8x8.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_16x16.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_32x32.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_64x64.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_128x128.png')} ),
+        		new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('assets/N35W125_texture_256x256.png')} )
+        		
+        	];
+
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 1500 );
+				
+				camera.position.x = 20;
+				camera.position.y = -50;
+				camera.position.z = 30;
+				
+				camera.rotation.x = 20;
+				
+
+				controls = new THREE.FlyControls( camera );
+				controls.movementSpeed = 100;
+				//controls.rollSpeed = Math.PI / 10;
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.Fog( 0x000000, 1, 15000 );
+				scene.autoUpdate = false;
+
+				var light = new THREE.PointLight( 0xff2200 );
+				light.position.set( 0, 0, 0 );
+				scene.add( light );
+
+				var light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 0, 0, 1 ).normalize();
+				scene.add( light );
+
+				var i, j, mesh, lod;
+				var step = 0;
+				
+				// prepared for a set of 4x4 chunks, actually using 1
+				for ( j = 0; j < 1; j ++ ) {
+
+					lod = new THREE.LOD();
+
+					for ( i = 0; i < geometry.length; i ++ ) {
+
+						mesh = new THREE.Mesh( geometry[ i ][ 0 ], material[ i ] );
+						mesh.updateMatrix();
+						mesh.matrixAutoUpdate = false;
+						lod.addLevel( mesh, geometry[ i ][ 1 ] );
+						console.log(lod);
+
+					}
+
+					lod.position.x = step;
+					
+					if ( j < 4 ) {
+						step = step + 20;
+						lod.position.x = step;
+						lod.position.y = 20;
+					}
+					
+					if ( j > 3 && j < 8 ) {
+						step = step - 20;
+						lod.position.x = step + 20;
+						lod.position.y = 40;
+					}
+					
+					if ( j > 7 && j < 12 ) {
+						step = step + 20;
+						lod.position.x = step;
+						lod.position.y = 60;
+					}
+					
+					if ( j > 11 && j < 16 ) {
+						step = step - 20;
+						lod.position.x = step + 20;
+						lod.position.y = 80;
+					}
+						
+					lod.position.z = 0;
+					lod.updateMatrix();
+					lod.matrixAutoUpdate = false;
+					scene.add( lod );
+
+				}
+
+
+				renderer = new THREE.WebGLRenderer( { alpha: false } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.sortObjects = false;
+				container.appendChild( renderer.domElement );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				render();
+
+			}
+
+			function render() {
+
+				controls.update( clock.getDelta() );
+
+				scene.updateMatrixWorld();
+				scene.traverse( function ( object ) {
+
+					if ( object instanceof THREE.LOD ) {
+
+						object.update( camera );
+
+					}
+
+				} );
+
+				renderer.render( scene, camera );
+
+			}
+
+		</script>
+
+	</body>
+</html>
