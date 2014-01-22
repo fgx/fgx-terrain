@@ -15,6 +15,15 @@ _3D Earth and flat map of California_
  Use your point device to pan, rotate and zoom. Once the projetion issues are sorted out, these models will be overlayed with 2D maps. 
  Elevations are highly exaggerated. There is data missing before the international date line. The Gobe appears distorted at this scale because of the Mercator projection.
 
+## Project Links
+
+You have two ways of viewing the FGx Plane Spotter files:
+
+* Code hosted on GitHub: [fgx.github.io]( http://fgx.github.io/fgx-terrain/ "view the files as apps." ) <input value="<< You are now probably here." size=28 style="font:bold 12pt monospace;border-width:0;" >  
+* Source code on GitHub: [github.com/fgx]( https://github.com/fgx/fgx-fgx-terrain/ "View the files as source code." ) <scan style=display:none ><< You are now probably here.</scan>
+
+
+
 ## Concept
 ### Mission
 Provide 3D terrain elevation data for the entire earth at 90 meter intervals - freely and easily accessible even to new and intermediate programmers.

@@ -1,0 +1,200 @@
+﻿<!doctype html>
+<html lang=en>
+<head>
+<title>FGx Terrain ~ 3D Flatland Demo</title>
+<meta charset=utf-8>
+</head>
+<body>
+<script src = http://mrdoob.github.io/three.js/build/three.min.js ></script>
+<script src = http://mrdoob.github.io/three.js/examples/js/controls/TrackballControls.js ></script>
+<script>
+	var renderer, scene, camera, controls, heightMap, mesh, imgData;
+	
+	var pi = Math.PI, pi2 = pi * 2, pi05 = pi * 0.5;
+	var d2r = pi / 180, r2d = 180 / pi;  // degrees & radians
+	function v(x,y,z){ return new THREE.Vector3(x,y,z); }
+	function cos(a){ return Math.cos(a); }
+	function sin(a){ return Math.sin(a); }
+	function pow(a,b){ return Math.pow(a,b); }
+
+// http://en.wikipedia.org/wiki/Spherical_coordinate_system
+	function latlon2xyz( lat, lon, radius ) {
+		var rc =  radius * cos( lat );
+		return  new THREE.Vector3(
+			rc * cos( lon),
+			radius * sin( lat ),
+			rc * sin( lon)
+		);
+	}
+
+// http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Tile_servers
+	function lon2tile( lon, zoom ) {
+		return (Math.floor((lon + 180 ) / 360 * pow( 2, zoom )));
+	}
+
+	function lat2tile( lat, zoom ) {
+		return ( Math.floor(( 1 - Math.log( Math.tan( lat * pi / 180) + 1 / cos( lat * pi / 180)) / pi )/2 * pow(2, zoom)));
+	}
+
+	function tile2lon( x, z ) {
+		return ( x / pow( 2, z ) * 360 - 180 );
+	}
+
+	function tile2lat( y, z ) {
+		var n = pi - 2 * pi * y / pow( 2, z );
+		return ( 180 / pi * Math.atan( 0.5 * ( Math.exp(n) - Math.exp(-n))) );
+	}	
+
+	init();
+	animate();
+
+	function init() {
+		// document.body.style.cssText = 'margin: 0; overflow: hidden; }';
+
+		renderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true, clearColor: 0xffffff }  );
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 1000 );
+		camera.position.set( 0, 100, 60 );
+		controls = new THREE.TrackballControls( camera, renderer.domElement );
+
+// ocean
+		// var material = new THREE.MeshNormalMaterial( { opacity: 0.85, shading: THREE.SmoothShading, transparent: true} );
+		// var geometry = new THREE.SphereGeometry( 62, 100, 50 );
+		// var mesh = new THREE.Mesh( geometry, material );
+		// scene.add( mesh );
+
+		var x = 40;
+		var y = 98;
+		var zoom = 8;
+		var mapTexture = THREE.ImageUtils.loadTexture( 'http://mt1.google.com/vt/lyrs=s&x=' + x + '&y=' + y + '&z=' + zoom );
+		var material = new THREE.MeshBasicMaterial( { shading: THREE.SmoothShading, map: mapTexture } );
+		var geometry = new THREE.PlaneGeometry( 200, 200, 255, 255 );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( -0.5 * Math.PI ) );
+		mesh = new THREE.Mesh( geometry, material );
+		
+		mesh.geometry.computeFaceNormals();
+		mesh.geometry.computeVertexNormals();
+		scene.add( mesh );
+		
+		initHeightMap( zoom, x, y, -122.398, 37.796 );
+	}
+
+	function initHeightMap( zoom, x, y, lon, lat ) {
+		heightMap = document.createElement('img' )
+		heightMap.src = '7+/' + (x / 2) + '/' + ( y / 2) + '.png';
+		document.body.appendChild( heightMap );
+		heightMap.onload = function() {
+console.log( heightMap.src , heightMap )	
+			imgData = getHeightData( heightMap, zoom, x, y, lon, lat );
+			initCanvas( zoom, x, y );
+//	console.log( imgData )					
+		};
+		
+	}
+
+//	return array with height data from img
+	function getHeightData( elevationsImage, zoomTile, xTile, yTile, lon, lat ) {
+console.log( 'zoomTile', zoomTile);
+console.log( 'xTile', xTile);
+console.log( 'yTile', yTile );	
+		lonTileStart = tile2lon( xTile, zoomTile );
+		lonTileLength = tile2lon( xTile + 1, zoomTile ) - lonTileStart;
+console.log( 'lonTileStart', lonTileStart );
+console.log( 'lonTileLength', lonTileLength );
+
+		latTileStart = tile2lat( yTile, zoomTile );
+		latTileLength = tile2lat( yTile + 1, zoomTile ) - latTileStart;
+console.log( 'latTileStart', latTileStart, 'latTileLength', latTileLength );
+		
+console.log(' *********************** ')
+		zoomHeightMap = 7;
+		xHeightMapStart = lon2tile( lonTileStart, zoomHeightMap);
+console.log( 'xHeightMapStart', xHeightMapStart);
+
+		lonHeightMapStart = tile2lon( xHeightMapStart, zoomHeightMap);
+		lonHeightMapLength = tile2lon( xHeightMapStart + 1, zoomHeightMap) - lonHeightMapStart;
+console.log('lonHeightMapStart', lonHeightMapStart);
+console.log('lonHeightMapLength', lonHeightMapLength);
+console.log('lonHeightMapFinish', lonHeightMapStart + lonHeightMapLength);
+console.log(' *********************** ')
+
+		yHeightMapStart = lat2tile( latTileStart, zoomHeightMap);
+console.log( 'yTileHeightMapStart', yHeightMapStart);
+		latHeightMapStart = tile2lat( yHeightMapStart, zoomHeightMap )
+		latHeightMapLength = tile2lat( yHeightMapStart + 1, zoomHeightMap) - latHeightMapStart;
+console.log(  'latHeightMapStart ', latHeightMapStart );
+console.log(  'latHeightMapLength', latHeightMapLength );
+
+console.log(' *********************** ')
+		
+		lonWindowStartFraction = ( lonHeightMapStart - lonTileStart) /  lonHeightMapLength;
+		lonWindowLengthFraction = lonTileLength /  lonHeightMapLength;
+console.log( 'lonWindowStartFraction', lonWindowLengthFraction);
+console.log( 'lonWindowLengthFraction', lonWindowLengthFraction );		
+		
+		
+		latWindowStartFraction = (latHeightMapStart -  latTileStart ) /  latHeightMapLength;
+		latWindowLengthFraction = latTileLength / latHeightMapLength;
+
+
+console.log( 'latWindowStartFraction', latWindowStartFraction);
+console.log( 'latWindowLengthFraction', latWindowLengthFraction );
+
+console.log(' *********************** ')
+		var scale = 0.025;
+
+		var canvas = document.createElement( 'canvas' );
+		// canvas.width = canvas.height = 256;
+		
+		canvas.width = elevationsImage.naturalWidth;
+		canvas.height = elevationsImage.naturalHeight;		
+		
+		context = canvas.getContext( '2d' );
+		context.drawImage( elevationsImage, 0, 0 );
+		
+		lonStartPix = lonWindowStartFraction * canvas.width;
+		// lonLengthPix = lonWindowLengthFraction * canvas.width;
+		lonLengthPix = Math.floor( lonWindowLengthFraction * canvas.width * 256 / ( lonWindowLengthFraction * canvas.width) );
+		
+		latStartPix = latWindowStartFraction * canvas.height;
+		//latLengthPix = latWindowStartFraction * canvas.height;
+		latLengthPix = canvas.height * 256 / canvas.height;
+		
+console.log( 'w', canvas.width, 'h', canvas.height );
+console.log( lonStartPix, lonLengthPix, latStartPix, latLengthPix );
+
+		var imgd = context.getImageData( Math.floor(lonStartPix), latStartPix, lonLengthPix, latLengthPix  );
+		// var imgd = context.getImageData( 0, 0, 256, 256  );
+console.log( imgd );		
+		var pix = imgd.data;
+
+		var data = new Float32Array( 65536 );
+		var j=0, all;
+		for (var i = 0, len = pix.length; i < len; i += 4) {
+			all = pix[i] + pix[i + 1] + pix[i + 2];
+			data[j++] = scale * all;
+		}
+		return data;
+	}	
+	
+	function initCanvas( zoom, x, y) {
+		var verts = mesh.geometry.vertices;
+		for (var i = 0, len = verts.length; i < len; i++) {
+			verts[i].y = imgData[i];
+		}
+		mesh.geometry.verticesNeedUpdate = true;
+		mesh.geometry.computeFaceNormals();
+		mesh.geometry.computeVertexNormals();
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+		controls.update();
+		renderer.render( scene, camera );
+	}
+</script>
+</body>
+</html>
