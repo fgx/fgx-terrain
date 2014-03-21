@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+ <head>
+  <title>
+   zoom 4
+  </title>
+ </head>
+ <body>
+  <div align="center">
+   <script type="text/javascript">
+ var x, y, msg;
+    msg = '<table border="1" cellpadding="0" cellspacing="0" aling="center" summary="show zoom 4 images">';
+    for (y = 0; y < 16; y++) {
+        msg += '<tr>';
+        for (x = 0; x < 16; x++) {
+            msg += '<td><img src="4/'+x+'/'+y+'.png" width="64" height="64"><\/td>';
+        }
+        msg += '<\/tr>';
+    }
+    msg += '<\/table>';
+    document.write(msg);
+   </script>
+  </div>
+ </body>
+</html>
